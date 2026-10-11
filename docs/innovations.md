@@ -4,13 +4,13 @@
 > in-progress build on 2026-10-10, used for planning only. They are not results. Results come only from
 > `results/*.json`, written by scripts, and are rendered into the README by `scripts/render_readme.py`.
 
-*Plan dated 2026-10-10, for the Compuquip interview on Thu 2026-10-15 with Kim Sullivan (COO). It was judged from three reviewer proposals and checked against the repo as it stands: 18 rule runbooks plus `_global.yaml`; the triage graph, policy, review queue and injection modules; firewall space/oracle/resolver with PAN-OS, FortiOS and Check Point parsers landing; 48 SYNTHETIC firewall change requests; no commits yet. **Tier 1** is built before the interview, about 18 build hours across 3 parallel agents. **Tier 2** comes after.*
+*Plan dated 2026-10-10. It was judged from three reviewer proposals and checked against the repo as it stands: 18 rule runbooks plus `_global.yaml`; the triage graph, policy, review queue and injection modules; firewall space/oracle/resolver with PAN-OS, FortiOS and Check Point parsers landing; 48 SYNTHETIC firewall change requests; no commits yet. **Tier 1** is the first milestone, about 18 build hours across 3 parallel agents. **Tier 2** comes after it.*
 
 ---
 
 ## Signature story
 
-Compuquip wants AI to do the reasoning at scale against live customer environments that carry service commitments. A COO does not ask "what is the F1 score?" She asks what the system is trusted to do at 3am, for which customer, how it earned that trust, and how the trust is taken away when it is wrong. The signature answer is **Earned Autonomy**. Every (customer, detection) pair starts in shadow mode and climbs a four-step ladder: shadow, then suggest, then daytime auto-close with full next-morning review, then overnight auto-close with sampled QA. It climbs only on analyst-verified evidence, and every step is gated:
+A managed security provider wants AI to do the reasoning at scale against live customer environments that carry service commitments. Operations leadership does not ask "what is the F1 score?" They ask what the system is trusted to do at 3am, for which customer, how it earned that trust, and how the trust is taken away when it is wrong. The signature answer is **Earned Autonomy**. Every (customer, detection) pair starts in shadow mode and climbs a four-step ladder: shadow, then suggest, then daytime auto-close with full next-morning review, then overnight auto-close with sampled QA. It climbs only on analyst-verified evidence, and every step is gated:
 
 - an exact one-sided Clopper-Pearson bound on the false-close rate;
 - zero auto-closes in an adversarial suite built to look like the allow-list;
@@ -53,7 +53,7 @@ flowchart LR
 
 ---
 
-## Tier 1 build specs (before the interview)
+## Tier 1 build specs (milestone 1)
 
 Conventions for every item: offline unit tests use fixtures and fakes (CLAUDE.md). Real Ollama or Batfish runs are `@pytest.mark.integration`. Every number goes to `results/*.json` with `generated_at`, `benchmark_version` and seeds. Headline rates carry bootstrap 95% CIs (1,000 resamples, seed 42) plus a Wilson interval, and promotion gates use the exact one-sided CP upper bound. No new runtime dependencies: stumps, AUROC and CP are pure Python. Add a Makefile block `# ---- agent targets (innovations) ----` with `shortcut-audit`, `adversarial`, `runbook-impact`, `close-paths`, `change-proof`, `autonomy` and `innovations` (all of them).
 
@@ -268,7 +268,7 @@ Assumes the base normalized model, resolver, the three parsers and CR validation
 
 ---
 
-## Tier 2 specs (after the interview)
+## Tier 2 specs (milestone 2)
 
 **S-ext. Signature extensions, 5h**
 1. **Drift demotion.** Compare the close-eligible rate per (tenant, rule) against a trailing window with an exact binomial test, and cap at L1 on drift.
@@ -340,7 +340,7 @@ Metrics: `results/morning_handoff.json` `{notes, ungrounded_entities, blocked_no
 
 **Cannot claim:**
 - Real-world miss rates, or that any rule is safe at a real customer.
-- Analyst hours saved, real SLA attainment, automation rates at Compuquip volumes, or days to promotion.
+- Analyst hours saved, real SLA attainment, automation rates at a real provider's volumes, or days to promotion.
 - Real analyst verdicts. All verdicts are dataset-derived or simulated.
 - Robustness to real adversaries or "injection-proof". Say "resisted k/N payloads in our suite".
 - Calibrated LLM confidence. qwen2.5:3b's self-reported confidence is not calibrated, and the LLM is veto-only.
